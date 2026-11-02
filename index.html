@@ -1,0 +1,2337 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wintrex_Shop — Маркетплейс цифровых товаров</title>
+<style>
+:root {
+  --primary: #7c3aed;
+  --primary-hover: #6d28d9;
+  --primary-glow: rgba(124, 58, 237, 0.4);
+  --accent: #06b6d4;
+  --success: #10b981;
+  --warning: #f59e0b;
+  --danger: #ef4444;
+  --bg: #0f0f1a;
+  --bg-2: #15152a;
+  --bg-3: #1c1c35;
+  --card: #1a1a2e;
+  --card-hover: #22223f;
+  --text: #f1f5f9;
+  --text-dim: #94a3b8;
+  --text-muted: #64748b;
+  --border: #2d2d4a;
+  --border-light: #3d3d5c;
+  --shadow-sm: 0 2px 8px rgba(0,0,0,0.3);
+  --shadow: 0 8px 32px rgba(0,0,0,0.4);
+  --shadow-lg: 0 20px 60px rgba(0,0,0,0.5);
+  --radius-sm: 8px;
+  --radius: 14px;
+  --radius-lg: 20px;
+  --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+[data-theme="light"] {
+  --bg: #f8fafc;
+  --bg-2: #ffffff;
+  --bg-3: #f1f5f9;
+  --card: #ffffff;
+  --card-hover: #f8fafc;
+  --text: #0f172a;
+  --text-dim: #475569;
+  --text-muted: #94a3b8;
+  --border: #e2e8f0;
+  --border-light: #cbd5e1;
+  --shadow-sm: 0 2px 8px rgba(0,0,0,0.06);
+  --shadow: 0 8px 32px rgba(0,0,0,0.08);
+  --shadow-lg: 0 20px 60px rgba(0,0,0,0.12);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  min-height: 100vh;
+  transition: background 0.4s, color 0.4s;
+  overflow-x: hidden;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle at 20% 20%, rgba(124, 58, 237, 0.08) 0%, transparent 40%),
+              radial-gradient(circle at 80% 80%, rgba(6, 182, 212, 0.06) 0%, transparent 40%);
+  pointer-events: none;
+  z-index: 0;
+  animation: bgFloat 20s ease-in-out infinite;
+}
+
+@keyframes bgFloat {
+  0%, 100% { transform: translate(0, 0) rotate(0deg); }
+  50% { transform: translate(-2%, -2%) rotate(2deg); }
+}
+
+/* --- SCROLLBAR --- */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: var(--bg-2); }
+::-webkit-scrollbar-thumb { background: var(--border-light); border-radius: 5px; }
+::-webkit-scrollbar-thumb:hover { background: var(--primary); }
+
+/* --- HEADER --- */
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(15, 15, 26, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+  transition: var(--transition);
+}
+
+[data-theme="light"] .header {
+  background: rgba(255, 255, 255, 0.85);
+}
+
+.header.scrolled {
+  box-shadow: var(--shadow);
+}
+
+.header-inner {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 16px 24px;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  color: var(--text);
+  font-size: 22px;
+  font-weight: 900;
+  letter-spacing: -0.5px;
+  transition: var(--transition);
+  flex-shrink: 0;
+}
+
+.logo-icon {
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(135deg, var(--primary), var(--accent));
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  box-shadow: 0 4px 20px var(--primary-glow);
+  animation: logoPulse 3s ease-in-out infinite;
+}
+
+@keyframes logoPulse {
+  0%, 100% { box-shadow: 0 4px 20px var(--primary-glow); }
+  50% { box-shadow: 0 4px 30px var(--primary-glow), 0 0 40px rgba(6, 182, 212, 0.3); }
+}
+
+.logo span { color: var(--primary); }
+
+.search-wrapper {
+  flex: 1;
+  max-width: 600px;
+  position: relative;
+}
+
+.search-box {
+  display: flex;
+  align-items: center;
+  background: var(--bg-3);
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0;
+  transition: var(--transition);
+  overflow: hidden;
+}
+
+.search-box:focus-within {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 4px var(--primary-glow);
+}
+
+.search-box svg {
+  margin-left: 16px;
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.search-box input {
+  flex: 1;
+  padding: 12px 16px;
+  background: none;
+  border: none;
+  outline: none;
+  color: var(--text);
+  font-size: 14px;
+  font-family: inherit;
+}
+
+.search-box input::placeholder { color: var(--text-muted); }
+
+.search-box button {
+  padding: 12px 20px;
+  background: var(--primary);
+  border: none;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+  font-size: 14px;
+}
+
+.search-box button:hover { background: var(--primary-hover); }
+
+/* --- HEADER ACTIONS --- */
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.icon-btn {
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  background: var(--bg-3);
+  border: 1px solid var(--border);
+  color: var(--text);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition);
+  position: relative;
+  font-size: 18px;
+}
+
+.icon-btn:hover {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: white;
+  transform: translateY(-2px);
+}
+
+.badge-count {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  background: var(--danger);
+  color: white;
+  font-size: 11px;
+  font-weight: 700;
+  min-width: 20px;
+  height: 20px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 5px;
+  border: 2px solid var(--bg);
+  animation: badgePop 0.3s ease;
+}
+
+@keyframes badgePop {
+  0% { transform: scale(0); }
+  70% { transform: scale(1.3); }
+  100% { transform: scale(1); }
+}
+
+.btn {
+  padding: 10px 20px;
+  border-radius: 10px;
+  border: none;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: var(--transition);
+  font-family: inherit;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--primary), var(--primary-hover));
+  color: white;
+  box-shadow: 0 4px 15px var(--primary-glow);
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px var(--primary-glow);
+}
+
+.btn-outline {
+  background: transparent;
+  color: var(--text);
+  border: 1.5px solid var(--border-light);
+}
+
+.btn-outline:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+/* --- HERO --- */
+.hero {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 32px 24px;
+  position: relative;
+  z-index: 1;
+}
+
+.hero-slider {
+  position: relative;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  height: 320px;
+  box-shadow: var(--shadow-lg);
+}
+
+.hero-slide {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 0.8s ease;
+  display: flex;
+  align-items: center;
+  padding: 60px;
+  background: linear-gradient(135deg, #7c3aed 0%, #06b6d4 100%);
+}
+
+.hero-slide:nth-child(2) {
+  background: linear-gradient(135deg, #ec4899 0%, #f59e0b 100%);
+}
+
+.hero-slide:nth-child(3) {
+  background: linear-gradient(135deg, #10b981 0%, #06b6d4 100%);
+}
+
+.hero-slide.active { opacity: 1; z-index: 1; }
+
+.hero-slide::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><circle cx="50" cy="50" r="1" fill="white" opacity="0.15"/></svg>');
+  opacity: 0.5;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 2;
+  color: white;
+  max-width: 60%;
+}
+
+.hero-tag {
+  display: inline-block;
+  background: rgba(255,255,255,0.2);
+  backdrop-filter: blur(10px);
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 16px;
+  animation: slideIn 0.8s ease;
+}
+
+.hero-title {
+  font-size: 42px;
+  font-weight: 900;
+  line-height: 1.1;
+  margin-bottom: 12px;
+  letter-spacing: -1px;
+  animation: slideIn 0.8s ease 0.1s backwards;
+}
+
+.hero-subtitle {
+  font-size: 16px;
+  opacity: 0.95;
+  margin-bottom: 24px;
+  animation: slideIn 0.8s ease 0.2s backwards;
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(-30px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.hero-buttons { display: flex; gap: 12px; animation: slideIn 0.8s ease 0.3s backwards; }
+
+.hero-buttons .btn {
+  background: white;
+  color: #0f172a;
+  padding: 12px 24px;
+  font-size: 15px;
+}
+
+.hero-buttons .btn:hover {
+  background: rgba(255,255,255,0.9);
+  transform: translateY(-2px);
+}
+
+.hero-buttons .btn-ghost {
+  background: rgba(255,255,255,0.15);
+  color: white;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.3);
+}
+
+.hero-buttons .btn-ghost:hover {
+  background: rgba(255,255,255,0.25);
+}
+
+.hero-stats {
+  position: absolute;
+  right: 60px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  z-index: 2;
+}
+
+.stat-card {
+  background: rgba(255,255,255,0.15);
+  backdrop-filter: blur(15px);
+  border: 1px solid rgba(255,255,255,0.25);
+  padding: 16px 20px;
+  border-radius: var(--radius);
+  color: white;
+  min-width: 130px;
+}
+
+.stat-value {
+  font-size: 24px;
+  font-weight: 800;
+  margin-bottom: 2px;
+}
+
+.stat-label {
+  font-size: 12px;
+  opacity: 0.85;
+}
+
+.hero-dots {
+  position: absolute;
+  bottom: 20px;
+  left: 60px;
+  display: flex;
+  gap: 8px;
+  z-index: 3;
+}
+
+.hero-dot {
+  width: 32px;
+  height: 4px;
+  background: rgba(255,255,255,0.4);
+  border-radius: 2px;
+  cursor: pointer;
+  transition: var(--transition);
+  border: none;
+}
+
+.hero-dot.active { background: white; width: 48px; }
+
+/* --- FEATURES --- */
+.features {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 24px 24px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+  position: relative;
+  z-index: 1;
+}
+
+.feature {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  transition: var(--transition);
+}
+
+.feature:hover {
+  border-color: var(--primary);
+  transform: translateY(-3px);
+  box-shadow: var(--shadow);
+}
+
+.feature-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, var(--primary), var(--accent));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.feature-text h4 {
+  font-size: 14px;
+  font-weight: 700;
+  margin-bottom: 2px;
+}
+
+.feature-text p {
+  font-size: 12px;
+  color: var(--text-dim);
+}
+
+/* --- MAIN LAYOUT --- */
+.main-layout {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 24px 60px;
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: 24px;
+  position: relative;
+  z-index: 1;
+}
+
+/* --- SIDEBAR --- */
+.sidebar {
+  position: sticky;
+  top: 90px;
+  height: fit-content;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+}
+
+.sidebar-section {
+  margin-bottom: 24px;
+}
+
+.sidebar-section:last-child { margin-bottom: 0; }
+
+.sidebar-title {
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-dim);
+  margin-bottom: 12px;
+}
+
+.category-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.category-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: var(--transition);
+  font-size: 14px;
+  color: var(--text-dim);
+  border: none;
+  background: none;
+  width: 100%;
+  text-align: left;
+  font-family: inherit;
+}
+
+.category-item:hover {
+  background: var(--bg-3);
+  color: var(--text);
+}
+
+.category-item.active {
+  background: linear-gradient(135deg, var(--primary), var(--primary-hover));
+  color: white;
+  font-weight: 600;
+}
+
+.category-item .cat-icon {
+  width: 24px;
+  text-align: center;
+  font-size: 16px;
+}
+
+.category-item .cat-count {
+  margin-left: auto;
+  background: var(--bg-3);
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.category-item.active .cat-count {
+  background: rgba(255,255,255,0.25);
+  color: white;
+}
+
+.price-range {
+  margin-top: 8px;
+}
+
+.price-inputs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.price-inputs input {
+  flex: 1;
+  padding: 8px 10px;
+  background: var(--bg-3);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  font-size: 13px;
+  font-family: inherit;
+  outline: none;
+  width: 100%;
+}
+
+.price-inputs input:focus { border-color: var(--primary); }
+
+/* --- CONTENT --- */
+.content-area { min-width: 0; }
+
+.toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.results-info {
+  font-size: 14px;
+  color: var(--text-dim);
+}
+
+.results-info strong { color: var(--text); }
+
+.toolbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.select-wrapper {
+  position: relative;
+}
+
+.select-wrapper select {
+  appearance: none;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 9px 36px 9px 14px;
+  color: var(--text);
+  font-size: 14px;
+  font-family: inherit;
+  cursor: pointer;
+  outline: none;
+  transition: var(--transition);
+}
+
+.select-wrapper select:hover { border-color: var(--primary); }
+
+.select-wrapper::after {
+  content: '▾';
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  color: var(--text-muted);
+}
+
+.view-toggle {
+  display: flex;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.view-toggle button {
+  padding: 9px 12px;
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: var(--transition);
+  font-size: 15px;
+}
+
+.view-toggle button.active {
+  background: var(--primary);
+  color: white;
+}
+
+/* --- PRODUCTS GRID --- */
+.products {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 16px;
+}
+
+.products.list-view {
+  grid-template-columns: 1fr;
+}
+
+.products.list-view .product {
+  flex-direction: row;
+}
+
+.products.list-view .product-media {
+  width: 180px;
+  height: auto;
+  min-height: 180px;
+  flex-shrink: 0;
+}
+
+.product {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  transition: var(--transition);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+  animation: productIn 0.5s ease backwards;
+}
+
+@keyframes productIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.product:hover {
+  transform: translateY(-6px);
+  border-color: var(--primary);
+  box-shadow: var(--shadow-lg), 0 0 0 1px var(--primary);
+}
+
+.product-media {
+  height: 160px;
+  background: linear-gradient(135deg, var(--bg-3), var(--bg-2));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 64px;
+  position: relative;
+  overflow: hidden;
+}
+
+.product-media::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 50%, var(--primary-glow) 0%, transparent 70%);
+  opacity: 0;
+  transition: var(--transition);
+}
+
+.product:hover .product-media::before { opacity: 1; }
+
+.product-media .emoji {
+  position: relative;
+  z-index: 1;
+  transition: transform 0.4s;
+}
+
+.product:hover .product-media .emoji {
+  transform: scale(1.15) rotate(-5deg);
+}
+
+.product-badges {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  z-index: 2;
+}
+
+.badge {
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  color: white;
+}
+
+.badge.hot { background: linear-gradient(135deg, #ef4444, #f97316); }
+.badge.sale { background: linear-gradient(135deg, #ec4899, #f43f5e); }
+.badge.new { background: linear-gradient(135deg, #10b981, #06b6d4); }
+.badge.top { background: linear-gradient(135deg, #f59e0b, #eab308); }
+
+.fav-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: rgba(0,0,0,0.4);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.2);
+  color: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  transition: var(--transition);
+  z-index: 2;
+  opacity: 0;
+}
+
+.product:hover .fav-btn { opacity: 1; }
+
+.fav-btn.active {
+  background: var(--danger);
+  border-color: var(--danger);
+  opacity: 1;
+}
+
+.fav-btn:hover { transform: scale(1.1); }
+
+.product-body {
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.product-title {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 6px;
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.product-seller {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--text-dim);
+  margin-bottom: 10px;
+}
+
+.seller-avatar {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary), var(--accent));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 9px;
+  color: white;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.seller-rating {
+  margin-left: auto;
+  color: var(--warning);
+  font-weight: 600;
+  font-size: 11px;
+}
+
+.product-meta {
+  display: flex;
+  gap: 12px;
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+}
+
+.product-meta span { display: flex; align-items: center; gap: 4px; }
+
+.product-bottom {
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+  gap: 8px;
+}
+
+.product-price {
+  display: flex;
+  flex-direction: column;
+}
+
+.price-current {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--primary);
+  line-height: 1;
+}
+
+.price-old {
+  font-size: 12px;
+  color: var(--text-muted);
+  text-decoration: line-through;
+}
+
+.buy-btn {
+  padding: 8px 14px;
+  background: linear-gradient(135deg, var(--primary), var(--primary-hover));
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+  transition: var(--transition);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+  font-family: inherit;
+}
+
+.buy-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px var(--primary-glow);
+}
+
+.buy-btn:active { transform: translateY(0); }
+
+/* --- EMPTY --- */
+.empty {
+  grid-column: 1/-1;
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--text-dim);
+}
+
+.empty-emoji {
+  font-size: 64px;
+  margin-bottom: 16px;
+  opacity: 0.5;
+}
+
+.empty h3 {
+  font-size: 18px;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+
+/* --- PAGINATION --- */
+.pagination {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 32px;
+  flex-wrap: wrap;
+}
+
+.page-btn {
+  min-width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  color: var(--text);
+  cursor: pointer;
+  font-weight: 600;
+  font-family: inherit;
+  transition: var(--transition);
+  padding: 0 12px;
+}
+
+.page-btn:hover:not(:disabled) {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.page-btn.active {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: white;
+}
+
+.page-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* --- CART DRAWER --- */
+.drawer-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(4px);
+  z-index: 998;
+  opacity: 0;
+  pointer-events: none;
+  transition: var(--transition);
+}
+
+.drawer-overlay.active {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 420px;
+  max-width: 100vw;
+  background: var(--bg-2);
+  z-index: 999;
+  transform: translateX(100%);
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+  box-shadow: var(--shadow-lg);
+}
+
+.drawer.active { transform: translateX(0); }
+
+.drawer-header {
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.drawer-title {
+  font-size: 18px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.drawer-close {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: var(--bg-3);
+  border: 1px solid var(--border);
+  color: var(--text);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  transition: var(--transition);
+}
+
+.drawer-close:hover {
+  background: var(--danger);
+  border-color: var(--danger);
+  color: white;
+  transform: rotate(90deg);
+}
+
+.drawer-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px 24px;
+}
+
+.cart-item {
+  display: flex;
+  gap: 12px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--border);
+  animation: slideIn 0.3s ease;
+}
+
+.cart-item-media {
+  width: 60px;
+  height: 60px;
+  border-radius: 10px;
+  background: var(--bg-3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  flex-shrink: 0;
+}
+
+.cart-item-info { flex: 1; min-width: 0; }
+
+.cart-item-title {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 4px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cart-item-price {
+  font-size: 13px;
+  color: var(--primary);
+  font-weight: 700;
+}
+
+.cart-qty {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.qty-btn {
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  background: var(--bg-3);
+  border: 1px solid var(--border);
+  color: var(--text);
+  cursor: pointer;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition);
+}
+
+.qty-btn:hover {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: white;
+}
+
+.cart-qty span {
+  min-width: 24px;
+  text-align: center;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.cart-remove {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 4px;
+  transition: var(--transition);
+  font-size: 18px;
+  align-self: flex-start;
+}
+
+.cart-remove:hover { color: var(--danger); transform: scale(1.1); }
+
+.cart-empty {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--text-dim);
+}
+
+.cart-empty .emoji { font-size: 64px; margin-bottom: 16px; opacity: 0.5; }
+
+.drawer-footer {
+  padding: 20px 24px;
+  border-top: 1px solid var(--border);
+  background: var(--card);
+}
+
+.cart-summary {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  font-size: 14px;
+  color: var(--text-dim);
+}
+
+.cart-summary.total {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--text);
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+  margin-bottom: 16px;
+}
+
+.cart-summary.total .price { color: var(--primary); }
+
+.checkout-btn {
+  width: 100%;
+  padding: 16px;
+  background: linear-gradient(135deg, var(--success), #059669);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: var(--transition);
+  font-family: inherit;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.checkout-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
+}
+
+/* --- TOAST --- */
+.toast-container {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 2000;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.toast {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--primary);
+  padding: 14px 20px;
+  border-radius: 12px;
+  box-shadow: var(--shadow-lg);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 280px;
+  max-width: 400px;
+  animation: toastIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  color: var(--text);
+}
+
+@keyframes toastIn {
+  from { transform: translateX(120%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+.toast.hiding {
+  animation: toastOut 0.3s ease forwards;
+}
+
+@keyframes toastOut {
+  to { transform: translateX(120%); opacity: 0; }
+}
+
+.toast.success { border-left-color: var(--success); }
+.toast.error { border-left-color: var(--danger); }
+.toast.warning { border-left-color: var(--warning); }
+
+.toast-icon { font-size: 22px; flex-shrink: 0; }
+.toast-content { flex: 1; }
+.toast-title { font-weight: 700; font-size: 14px; margin-bottom: 2px; }
+.toast-message { font-size: 13px; color: var(--text-dim); }
+
+/* --- MODAL (Product detail) --- */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+  backdrop-filter: blur(8px);
+  z-index: 1500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  opacity: 0;
+  pointer-events: none;
+  transition: var(--transition);
+}
+
+.modal-overlay.active {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.modal {
+  background: var(--bg-2);
+  border-radius: var(--radius-lg);
+  max-width: 900px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: var(--shadow-lg);
+  transform: scale(0.9);
+  transition: var(--transition);
+  position: relative;
+}
+
+.modal-overlay.active .modal { transform: scale(1); }
+
+.modal-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--bg-3);
+  border: 1px solid var(--border);
+  color: var(--text);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  z-index: 10;
+  transition: var(--transition);
+}
+
+.modal-close:hover {
+  background: var(--danger);
+  border-color: var(--danger);
+  color: white;
+  transform: rotate(90deg);
+}
+
+.modal-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+}
+
+.modal-media {
+  background: linear-gradient(135deg, var(--bg-3), var(--primary));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 140px;
+  min-height: 400px;
+  border-radius: var(--radius-lg) 0 0 var(--radius-lg);
+  position: relative;
+  overflow: hidden;
+}
+
+.modal-media::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, transparent 60%);
+}
+
+.modal-media .emoji { position: relative; z-index: 1; }
+
+.modal-info { padding: 40px 32px; }
+
+.modal-badge {
+  display: inline-block;
+  background: var(--primary);
+  color: white;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+.modal-title {
+  font-size: 26px;
+  font-weight: 800;
+  margin-bottom: 12px;
+  line-height: 1.2;
+}
+
+.modal-seller {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px;
+  background: var(--bg-3);
+  border-radius: 12px;
+  margin-bottom: 20px;
+}
+
+.modal-seller .seller-avatar {
+  width: 40px;
+  height: 40px;
+  font-size: 16px;
+}
+
+.modal-seller-info h4 {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.modal-seller-info p {
+  font-size: 12px;
+  color: var(--text-dim);
+}
+
+.modal-desc {
+  font-size: 14px;
+  color: var(--text-dim);
+  line-height: 1.7;
+  margin-bottom: 24px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--border);
+}
+
+.modal-price-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.modal-price {
+  font-size: 32px;
+  font-weight: 900;
+  color: var(--primary);
+}
+
+.modal-price small {
+  font-size: 14px;
+  color: var(--text-muted);
+  font-weight: 400;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.modal-actions .btn { flex: 1; justify-content: center; padding: 14px; }
+
+/* --- FOOTER --- */
+.footer {
+  background: var(--bg-2);
+  border-top: 1px solid var(--border);
+  padding: 48px 24px 24px;
+  margin-top: 40px;
+  position: relative;
+  z-index: 1;
+}
+
+.footer-inner {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 40px;
+  margin-bottom: 32px;
+}
+
+.footer-brand p {
+  color: var(--text-dim);
+  font-size: 14px;
+  margin-top: 12px;
+  max-width: 300px;
+}
+
+.footer-col h4 {
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-dim);
+  margin-bottom: 16px;
+}
+
+.footer-col a {
+  display: block;
+  color: var(--text);
+  text-decoration: none;
+  font-size: 14px;
+  margin-bottom: 10px;
+  transition: var(--transition);
+}
+
+.footer-col a:hover { color: var(--primary); padding-left: 4px; }
+
+.footer-bottom {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding-top: 24px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+/* --- RESPONSIVE --- */
+@media (max-width: 1024px) {
+  .main-layout { grid-template-columns: 1fr; }
+  .sidebar { position: static; display: none; }
+  .hero-stats { display: none; }
+  .hero-content { max-width: 100%; }
+  .footer-inner { grid-template-columns: 1fr 1fr; }
+}
+
+@media (max-width: 768px) {
+  .header-inner { padding: 12px 16px; gap: 12px; flex-wrap: wrap; }
+  .search-wrapper { order: 10; flex-basis: 100%; max-width: 100%; }
+  .hero { padding: 20px 16px; }
+  .hero-slider { height: 400px; }
+  .hero-slide { padding: 32px 24px; }
+  .hero-title { font-size: 28px; }
+  .hero-stats { display: none; }
+  .main-layout { padding: 0 16px 40px; }
+  .products { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; }
+  .product-media { height: 120px; font-size: 48px; }
+  .product-body { padding: 10px; }
+  .product-title { font-size: 13px; }
+  .buy-btn { padding: 6px 10px; font-size: 12px; }
+  .price-current { font-size: 15px; }
+  .hero-buttons { flex-direction: column; }
+  .modal-grid { grid-template-columns: 1fr; }
+  .modal-media { min-height: 220px; border-radius: var(--radius-lg) var(--radius-lg) 0 0; font-size: 100px; }
+  .modal-info { padding: 24px 20px; }
+  .modal-title { font-size: 20px; }
+  .footer-inner { grid-template-columns: 1fr; gap: 24px; }
+  .drawer { width: 100%; }
+  .features { grid-template-columns: 1fr 1fr; }
+  .toolbar { flex-direction: column; align-items: stretch; }
+  .toolbar-actions { justify-content: space-between; }
+}
+
+@media (max-width: 480px) {
+  .logo { font-size: 16px; }
+  .logo-icon { width: 32px; height: 32px; font-size: 16px; }
+  .header-actions { gap: 4px; }
+  .icon-btn { width: 36px; height: 36px; font-size: 15px; }
+  .features { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="header" id="header">
+  <div class="header-inner">
+    <a href="#" class="logo" onclick="resetAll(event)">
+      <div class="logo-icon">⚡</div>
+      Wintrex<span>_Shop</span>
+    </a>
+
+    <div class="search-wrapper">
+      <div class="search-box">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+        </svg>
+        <input type="text" id="searchInput" placeholder="Поиск: Steam, Dota 2, аккаунты, буст...">
+        <button onclick="performSearch()">Найти</button>
+      </div>
+    </div>
+
+    <div class="header-actions">
+      <button class="icon-btn" onclick="toggleTheme()" title="Сменить тему">
+        <span id="themeIcon">🌙</span>
+      </button>
+      <button class="icon-btn" onclick="openFavorites()" title="Избранное">
+        ❤️
+        <span class="badge-count" id="favCount" style="display:none">0</span>
+      </button>
+      <button class="icon-btn" onclick="openCart()" title="Корзина">
+        🛒
+        <span class="badge-count" id="cartCount" style="display:none">0</span>
+      </button>
+      <button class="btn btn-primary" onclick="showToast('info','Регистрация','Форма входа появится скоро!')">
+        Войти
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-slider" id="heroSlider">
+    <div class="hero-slide active">
+      <div class="hero-content">
+        <div class="hero-tag">🔥 Только сегодня</div>
+        <h1 class="hero-title">Скидки до 50% на игры<br>и подписки</h1>
+        <p class="hero-subtitle">Тысячи товаров по лучшим ценам с мгновенной выдачей</p>
+        <div class="hero-buttons">
+          <button class="btn" onclick="scrollToProducts()">Смотреть каталог →</button>
+          <button class="btn btn-ghost" onclick="showToast('info','Скоро','Раздел появится в ближайшее время')">Как купить?</button>
+        </div>
+      </div>
+      <div class="hero-stats">
+        <div class="stat-card"><div class="stat-value">12K+</div><div class="stat-label">Товаров</div></div>
+        <div class="stat-card"><div class="stat-value">85K+</div><div class="stat-label">Покупателей</div></div>
+        <div class="stat-card"><div class="stat-value">99.8%</div><div class="stat-label">Довольны</div></div>
+        <div class="stat-card"><div class="stat-value">24/7</div><div class="stat-label">Поддержка</div></div>
+      </div>
+      <div class="hero-dots">
+        <button class="hero-dot active" onclick="goSlide(0)"></button>
+        <button class="hero-dot" onclick="goSlide(1)"></button>
+        <button class="hero-dot" onclick="goSlide(2)"></button>
+      </div>
+    </div>
+    <div class="hero-slide">
+      <div class="hero-content">
+        <div class="hero-tag">🎮 Новинки</div>
+        <h1 class="hero-title">Свежие аккаунты<br>и игровая валюта</h1>
+        <p class="hero-subtitle">Пополняй любимые игры без комиссии и ожидания</p>
+        <div class="hero-buttons">
+          <button class="btn" onclick="filterByCategory('currency')">Купить валюту →</button>
+        </div>
+      </div>
+    </div>
+    <div class="hero-slide">
+      <div class="hero-content">
+        <div class="hero-tag">⚡ Мгновенно</div>
+        <h1 class="hero-title">Буст и услуги<br>от топовых продавцов</h1>
+        <p class="hero-subtitle">Профессиональные игроки выведут тебя в топ рейтинга</p>
+        <div class="hero-buttons">
+          <button class="btn" onclick="filterByCategory('services')">Заказать →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<div class="features">
+  <div class="feature">
+    <div class="feature-icon">⚡</div>
+    <div class="feature-text"><h4>Мгновенная выдача</h4><p>Товар приходит за секунды</p></div>
+  </div>
+  <div class="feature">
+    <div class="feature-icon">🛡️</div>
+    <div class="feature-text"><h4>Безопасные сделки</h4><p>Защита покупателей и продавцов</p></div>
+  </div>
+  <div class="feature">
+    <div class="feature-icon">💳</div>
+    <div class="feature-text"><h4>Удобная оплата</h4><p>Карты, СБП, криптовалюта</p></div>
+  </div>
+  <div class="feature">
+    <div class="feature-icon">💬</div>
+    <div class="feature-text"><h4>Поддержка 24/7</h4><p>Поможем в любой ситуации</p></div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main-layout">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-title">Категории</div>
+      <div class="category-list" id="categoryList"></div>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-title">Цена, ₽</div>
+      <div class="price-range">
+        <div class="price-inputs">
+          <input type="number" id="priceMin" placeholder="от" min="0">
+          <input type="number" id="priceMax" placeholder="до" min="0">
+        </div>
+        <button class="btn btn-outline" style="width:100%;justify-content:center" onclick="applyPriceFilter()">
+          Применить
+        </button>
+      </div>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-title">Быстрые фильтры</div>
+      <div class="category-list">
+        <button class="category-item" onclick="filterByBadge('sale')">
+          <span class="cat-icon">🔥</span> Со скидкой
+        </button>
+        <button class="category-item" onclick="filterByBadge('hot')">
+          <span class="cat-icon">⭐</span> Хиты продаж
+        </button>
+        <button class="category-item" onclick="filterByBadge('new')">
+          <span class="cat-icon">✨</span> Новинки
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- CONTENT -->
+  <main class="content-area">
+    <div class="toolbar">
+      <div class="results-info">
+        Найдено: <strong id="resultsCount">0</strong> товаров
+      </div>
+      <div class="toolbar-actions">
+        <div class="select-wrapper">
+          <select id="sortSelect" onchange="applySort()">
+            <option value="popular">Популярные</option>
+            <option value="cheap">Сначала дешёвые</option>
+            <option value="expensive">Сначала дорогие</option>
+            <option value="rating">По рейтингу</option>
+            <option value="new">Новинки</option>
+          </select>
+        </div>
+        <div class="view-toggle">
+          <button id="gridViewBtn" class="active" onclick="setView('grid')">▦</button>
+          <button id="listViewBtn" onclick="setView('list')">☰</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="products" id="productsGrid"></div>
+    <div class="pagination" id="pagination"></div>
+  </main>
+</div>
+
+<!-- CART DRAWER -->
+<div class="drawer-overlay" id="cartOverlay" onclick="closeCart()"></div>
+<div class="drawer" id="cartDrawer">
+  <div class="drawer-header">
+    <div class="drawer-title">🛒 Корзина</div>
+    <button class="drawer-close" onclick="closeCart()">✕</button>
+  </div>
+  <div class="drawer-body" id="cartBody"></div>
+  <div class="drawer-footer" id="cartFooter" style="display:none">
+    <div class="cart-summary">
+      <span>Товаров:</span>
+      <span id="cartItemsTotal">0</span>
+    </div>
+    <div class="cart-summary">
+      <span>Скидка:</span>
+      <span style="color:var(--success)">−0 ₽</span>
+    </div>
+    <div class="cart-summary total">
+      <span>Итого:</span>
+      <span class="price" id="cartTotalPrice">0 ₽</span>
+    </div>
+    <button class="checkout-btn" onclick="checkout()">
+      💳 Перейти к оплате
+    </button>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
+  <div class="modal" id="modalContent" onclick="event.stopPropagation()"></div>
+</div>
+
+<!-- TOASTS -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <a href="#" class="logo">
+        <div class="logo-icon">⚡</div>
+        Wintrex<span>_Shop</span>
+      </a>
+      <p>Крупнейший маркетплейс цифровых товаров. Более 12 000 товаров, безопасные сделки и мгновенная выдача.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Покупателям</h4>
+      <a href="#">Как купить</a>
+      <a href="#">Способы оплаты</a>
+      <a href="#">Гарантии</a>
+      <a href="#">Отзывы</a>
+    </div>
+    <div class="footer-col">
+      <h4>Продавцам</h4>
+      <a href="#">Как продавать</a>
+      <a href="#">Комиссии</a>
+      <a href="#">API</a>
+      <a href="#">Партнёрам</a>
+    </div>
+    <div class="footer-col">
+      <h4>Поддержка</h4>
+      <a href="#">Помощь</a>
+      <a href="#">Связаться</a>
+      <a href="#">Telegram</a>
+      <a href="#">Discord</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <div>© 2026 Wintrex_Shop. Все права защищены.</div>
+    <div>Демо-версия · Реальные платежи не подключены</div>
+  </div>
+</footer>
+
+<script>
+// ============ DATA ============
+const CATEGORIES = [
+  { id: 'all', name: 'Все товары', icon: '🌐' },
+  { id: 'games', name: 'Игры', icon: '🎮' },
+  { id: 'accounts', name: 'Аккаунты', icon: '👤' },
+  { id: 'currency', name: 'Валюта', icon: '💎' },
+  { id: 'services', name: 'Услуги', icon: '⚔️' },
+  { id: 'software', name: 'Софт', icon: '💻' },
+  { id: 'subscriptions', name: 'Подписки', icon: '📺' },
+  { id: 'keys', name: 'Ключи', icon: '🔑' },
+];
+
+const SELLERS = {
+  s1: { name: 'GameMaster', avatar: 'GM', rating: 4.9, sales: 1240, color: '#7c3aed' },
+  s2: { name: 'ProBooster', avatar: 'PB', rating: 4.8, sales: 890, color: '#06b6d4' },
+  s3: { name: 'KeyStore', avatar: 'KS', rating: 5.0, sales: 3200, color: '#10b981' },
+  s4: { name: 'TradeKing', avatar: 'TK', rating: 4.7, sales: 560, color: '#f59e0b' },
+  s5: { name: 'AccMarket', avatar: 'AM', rating: 4.9, sales: 2100, color: '#ec4899' },
+};
+
+const PRODUCTS = [
+  // GAMES
+  { id: 1, title: 'GTA V Premium Edition', desc: 'Полный набор: игра + все DLC + 1M$ бонус в GTA Online. Ключ активации для Epic Games. Мгновенная выдача на почту.', price: 890, oldPrice: 1490, cat: 'games', icon: '🚗', seller: 's3', rating: 4.9, badge: 'sale', badgeText: 'Скидка', sold: 1240, date: 10 },
+  { id: 2, title: 'Minecraft Java Edition', desc: 'Официальный аккаунт Mojang. Полный доступ, смена почты и пароля. Гарантия 30 дней.', price: 1200, oldPrice: 0, cat: 'games', icon: '⛏️', seller: 's3', rating: 5.0, badge: 'top', badgeText: 'Топ', sold: 3200, date: 5 },
+  { id: 3, title: 'Cyberpunk 2077', desc: 'Лицензионный ключ для Steam. Регион РФ, активация без ограничений. Полное издание с Phantom Liberty.', price: 1590, oldPrice: 2490, cat: 'games', icon: '🌆', seller: 's3', rating: 4.8, badge: 'sale', badgeText: '-36%', sold: 890, date: 15 },
+  { id: 4, title: 'Red Dead Redemption 2', desc: 'Эпическая история на Диком Западе. Ключ для Rockstar Launcher, регион Россия.', price: 1390, oldPrice: 0, cat: 'games', icon: '🤠', seller: 's3', rating: 4.9, badge: null, sold: 560, date: 8 },
+  { id: 5, title: 'Elden Ring', desc: 'Легендарная Souls-like игра от FromSoftware. Ключ активации Steam. Гарантия.', price: 1890, oldPrice: 2990, cat: 'games', icon: '⚔️', seller: 's3', rating: 5.0, badge: 'hot', badgeText: 'Хит', sold: 2100, date: 3 },
+  { id: 6, title: 'Baldur\'s Gate 3', desc: 'Игра года 2023. Полное издание с цифровыми бонусами. Ключ Steam, регион РФ.', price: 2190, oldPrice: 0, cat: 'games', icon: '🐉', seller: 's3', rating: 5.0, badge: 'new', badgeText: 'Новинка', sold: 1240, date: 2 },
+  { id: 7, title: 'Hogwarts Legacy', desc: 'Погрузитесь в мир магии. Ключ Steam, все регионы. Мгновенная активация.', price: 1790, oldPrice: 2590, cat: 'games', icon: '🧙', seller: 's3', rating: 4.7, badge: 'sale', badgeText: '-30%', sold: 670, date: 12 },
+  { id: 8, title: 'The Witcher 3: Wild Hunt', desc: 'Комплексное издание с DLC. Полная версия на русском. Ключ GOG или Steam.', price: 690, oldPrice: 1190, cat: 'games', icon: '🗡️', seller: 's3', rating: 4.9, badge: null, sold: 4500, date: 20 },
+
+  // ACCOUNTS
+  { id: 9, title: 'Steam Аккаунт CS2 Prime', desc: 'Готовый аккаунт с Prime-статусом и инвентарём. Смена почты и пароля. Без бана.', price: 450, oldPrice: 690, cat: 'accounts', icon: '🎯', seller: 's5', rating: 4.8, badge: 'hot', badgeText: 'Хит', sold: 3400, date: 1 },
+  { id: 10, title: 'Valorant Аккаунт Immortal', desc: 'Аккаунт с рангом Immortal 2 и полным набором скинов. Регион EU, все чемпионы открыты.', price: 2900, oldPrice: 0, cat: 'accounts', icon: '🔫', seller: 's5', rating: 4.9, badge: 'top', badgeText: 'Топ', sold: 120, date: 4 },
+  { id: 11, title: 'Fortnite Аккаунт OG', desc: 'Редкий аккаунт с OG-скинами (Renegade Raider, Aerial Assault Trooper). Полный доступ.', price: 8900, oldPrice: 12900, cat: 'accounts', icon: '🏹', seller: 's5', rating: 5.0, badge: 'sale', badgeText: '-31%', sold: 34, date: 6 },
+  { id: 12, title: 'Discord Аккаунт 2018', desc: 'Старый аккаунт 2018 года, чистый, без банов. Редкий ID, все функции доступны.', price: 350, oldPrice: 0, cat: 'accounts', icon: '💬', seller: 's5', rating: 4.7, badge: 'new', badgeText: 'Новинка', sold: 890, date: 7 },
+  { id: 13, title: 'Netflix Premium 1 месяц', desc: 'Личный профиль на аккаунте Netflix Premium 4K. Гарантия 30 дней, замена при проблеме.', price: 250, oldPrice: 450, cat: 'accounts', icon: '🎬', seller: 's1', rating: 4.6, badge: 'sale', badgeText: '-44%', sold: 8900, date: 9 },
+  { id: 14, title: 'Spotify Premium 3 месяца', desc: 'Активация на ваш аккаунт Spotify. Без рекламы, офлайн-режим, высокое качество.', price: 490, oldPrice: 890, cat: 'accounts', icon: '🎵', seller: 's1', rating: 4.9, badge: null, sold: 4500, date: 14 },
+
+  // CURRENCY
+  { id: 15, title: 'Пополнение Steam 1000₽', desc: 'Быстрое пополнение баланса Steam на 1000 рублей. Без комиссии, за 2 минуты.', price: 1050, oldPrice: 0, cat: 'currency', icon: '💳', seller: 's4', rating: 4.9, badge: 'hot', badgeText: 'Хит', sold: 5600, date: 1 },
+  { id: 16, title: 'Valorant 1000 VP', desc: 'Пополнение внутриигровой валюты Valorant Points. Турция/РФ. Мгновенно.', price: 650, oldPrice: 890, cat: 'currency', icon: '💎', seller: 's4', rating: 4.8, badge: 'sale', badgeText: '-27%', sold: 2300, date: 11 },
+  { id: 17, title: 'Fortnite 1000 V-Bucks', desc: 'Пополнение V-Bucks на ваш аккаунт. Официальный способ, без бана. Регион РФ.', price: 590, oldPrice: 790, cat: 'currency', icon: '💰', seller: 's4', rating: 4.7, badge: null, sold: 1890, date: 8 },
+  { id: 18, title: 'Genshin Impact 980 Genesis', desc: 'Пополнение кристаллов Genesis в Genshin Impact. Безопасно и быстро.', price: 890, oldPrice: 1090, cat: 'currency', icon: '⭐', seller: 's4', rating: 4.9, badge: 'top', badgeText: 'Топ', sold: 3400, date: 5 },
+  { id: 19, title: 'Brawl Stars 950 гемов', desc: 'Пополнение гемов в Brawl Stars. Через официальный магазин, без риска бана.', price: 750, oldPrice: 0, cat: 'currency', icon: '💠', seller: 's4', rating: 4.8, badge: null, sold: 2100, date: 13 },
+  { id: 20, title: 'Roblox 1000 Robux', desc: 'Пополнение Robux на аккаунт Roblox. Быстро и безопасно. Все регионы.', price: 690, oldPrice: 890, cat: 'currency', icon: '🎲', seller: 's4', rating: 4.6, badge: 'sale', badgeText: '-22%', sold: 4500, date: 16 },
+
+  // SERVICES
+  { id: 21, title: 'Буст MMR Dota 2', desc: 'Профессиональный буст рейтинга от топ-500 игроков. Без читов, безопасно. 500 MMR.', price: 1500, oldPrice: 0, cat: 'services', icon: '⚔️', seller: 's2', rating: 5.0, badge: 'hot', badgeText: 'Хит', sold: 890, date: 2 },
+  { id: 22, title: 'Буст ранга CS2', desc: 'Повышение ранга в CS2. От Silver до Global Elite. Играем на вашем аккаунте.', price: 1200, oldPrice: 1890, cat: 'services', icon: '🎯', seller: 's2', rating: 4.9, badge: 'sale', badgeText: '-37%', sold: 560, date: 7 },
+  { id: 23, title: 'Обучение Dota 2 (1 час)', desc: 'Индивидуальное занятие с тренером 8К MMR. Разбор реплеев, механики, стратегии.', price: 800, oldPrice: 0, cat: 'services', icon: '📚', seller: 's2', rating: 5.0, badge: 'new', badgeText: 'Новинка', sold: 340, date: 3 },
+  { id: 24, title: 'Калибровка Dota 2', desc: 'Калибровка MMR с гарантией высокого ранга. Опытные игроки 10K+ MMR.', price: 2000, oldPrice: 2900, cat: 'services', icon: '📊', seller: 's2', rating: 4.8, badge: 'top', badgeText: 'Топ', sold: 210, date: 9 },
+  { id: 25, title: 'Буст в Apex Legends', desc: 'Помощь в достижении ранга Predator. Командная игра с про-игроками.', price: 1800, oldPrice: 0, cat: 'services', icon: '🎮', seller: 's2', rating: 4.7, badge: null, sold: 120, date: 18 },
+  { id: 26, title: 'Читы для CS2 (Private)', desc: 'Приватный софт с обходом VAC. Aim, Wallhack, Trigger. Обновления в комплекте.', price: 800, oldPrice: 1200, cat: 'services', icon: '🛡️', seller: 's1', rating: 4.2, badge: 'sale', badgeText: '-33%', sold: 890, date: 22 },
+
+  // SOFTWARE
+  { id: 27, title: 'Discord Nitro 1 месяц', desc: 'Активация Nitro на ваш аккаунт. Мгновенно, официальный метод. Все бусты и функции.', price: 350, oldPrice: 490, cat: 'software', icon: '💬', seller: 's1', rating: 4.9, badge: 'hot', badgeText: 'Хит', sold: 5600, date: 1 },
+  { id: 28, title: 'Windows 11 Pro ключ', desc: 'Официальный ключ активации Windows 11 Professional. Пожизненная лицензия.', price: 490, oldPrice: 890, cat: 'software', icon: '🪟', seller: 's3', rating: 4.8, badge: 'sale', badgeText: '-45%', sold: 3400, date: 12 },
+  { id: 29, title: 'Microsoft Office 2021', desc: 'Полный пакет Office 2021 Professional Plus. Пожизненная лицензия, 1 ПК.', price: 690, oldPrice: 1290, cat: 'software', icon: '📊', seller: 's3', rating: 4.9, badge: 'top', badgeText: 'Топ', sold: 1890, date: 6 },
+  { id: 30, title: 'Adobe Photoshop 2024', desc: 'Подписка на 1 год для 1 устройства. Официальная лицензия, все функции.', price: 2900, oldPrice: 4500, cat: 'software', icon: '🎨', seller: 's3', rating: 4.7, badge: 'sale', badgeText: '-36%', sold: 670, date: 11 },
+  { id: 31, title: 'Kaspersky Internet Security', desc: 'Лицензия на 1 год для 3 устройств. Защита от вирусов и угроз.', price: 890, oldPrice: 1490, cat: 'software', icon: '🛡️', seller: 's3', rating: 4.8, badge: null, sold: 450, date: 17 },
+  { id: 32, title: 'VPN 1 год (NordVPN)', desc: 'Годовая подписка NordVPN. Более 5000 серверов в 60 странах.', price: 1290, oldPrice: 2490, cat: 'software', icon: '🔒', seller: 's3', rating: 4.9, badge: 'sale', badgeText: '-48%', sold: 2100, date: 4 },
+
+  // SUBSCRIPTIONS
+  { id: 33, title: 'YouTube Premium 1 год', desc: 'Годовая подписка YouTube Premium на ваш аккаунт. Без рекламы, фоновое воспроизведение.', price: 1290, oldPrice: 2290, cat: 'subscriptions', icon: '📺', seller: 's1', rating: 4.8, badge: 'hot', badgeText: 'Хит', sold: 4500, date: 2 },
+  { id: 34, title: 'Spotify Premium 1 год', desc: 'Годовая подписка Spotify Premium. Активация на ваш аккаунт, любой регион.', price: 1490, oldPrice: 2490, cat: 'subscriptions', icon: '🎵', seller: 's1', rating: 4.9, badge: 'sale', badgeText: '-40%', sold: 3400, date: 5 },
+  { id: 35, title: 'Netflix Premium 1 год', desc: 'Годовая подписка на Netflix Premium 4K. Личный профиль. Гарантия 12 месяцев.', price: 2190, oldPrice: 3990, cat: 'subscriptions', icon: '🎬', seller: 's1', rating: 4.7, badge: 'top', badgeText: 'Топ', sold: 1890, date: 8 },
+  { id: 36, title: 'Telegram Premium 1 год', desc: 'Годовая подписка Telegram Premium. Официальная активация на ваш аккаунт.', price: 1490, oldPrice: 2490, cat: 'subscriptions', icon: '✈️', seller: 's1', rating: 4.9, badge: 'new', badgeText: 'Новинка', sold: 2300, date: 3 },
+  { id: 37, title: 'Disney+ 1 год', desc: 'Подписка Disney+ на 12 месяцев. Личный профиль, 4K качество, все новинки.', price: 1690, oldPrice: 2990, cat: 'subscriptions', icon: '🏰', seller: 's1', rating: 4.6, badge: 'sale', badgeText: '-43%', sold: 890, date: 14 },
+  { id: 38, title: 'Apple Music 6 месяцев', desc: 'Полугодовая подписка Apple Music. Активация на ваш Apple ID.', price: 890, oldPrice: 1390, cat: 'subscriptions', icon: '🍎', seller: 's1', rating: 4.8, badge: null, sold: 1200, date: 10 },
+
+  // KEYS
+  { id: 39, title: 'Xbox Game Pass Ultimate 3 мес', desc: 'Ключ активации Game Pass Ultimate на 3 месяца. Более 400 игр, облачный гейминг.', price: 1290, oldPrice: 2190, cat: 'keys', icon: '🎮', seller: 's3', rating: 4.9, badge: 'hot', badgeText: 'Хит', sold: 3400, date: 1 },
+  { id: 40, title: 'PS Plus Premium 12 мес', desc: 'Подписка PS Plus Premium на 12 месяцев. Для регионов Турция/Украина.', price: 2490, oldPrice: 3990, cat: 'keys', icon: '🎯', seller: 's3', rating: 4.8, badge: 'sale', badgeText: '-37%', sold: 890, date: 6 },
+  { id: 41, title: 'Steam Wallet 5000₽', desc: 'Код пополнения Steam на 5000 рублей. Мгновенная доставка на почту.', price: 5250, oldPrice: 0, cat: 'keys', icon: '💳', seller: 's4', rating: 5.0, badge: 'top', badgeText: 'Топ', sold: 2100, date: 4 },
+  { id: 42, title: 'Nintendo Switch Online 12 мес', desc: 'Годовая подписка Nintendo Switch Online. Активация на консоли.', price: 1490, oldPrice: 0, cat: 'keys', icon: '🍄', seller: 's3', rating: 4.7, badge: null, sold: 340, date: 15 },
+  { id: 43, title: 'Google Play Gift Card 1000₽', desc: 'Подарочная карта Google Play на 1000 рублей. Для покупок в Play Store.', price: 1050, oldPrice: 0, cat: 'keys', icon: '🎁', seller: 's4', rating: 4.9, badge: 'new', badgeText: 'Новинка', sold: 1890, date: 2 },
+  { id: 44, title: 'App Store & iTunes 2000₽', desc: 'Подарочная карта App Store на 2000 рублей. Для российского региона.', price: 2050, oldPrice: 0, cat: 'keys', icon: '🎵', seller: 's4', rating: 4.8, badge: null, sold: 670, date: 9 },
+  { id: 45, title: 'Roblox Gift Card 1700 Robux', desc: 'Подарочная карта Roblox на 1700 Robux. Активация через сайт.', price: 1290, oldPrice: 1690, cat: 'keys', icon: '🎲', seller: 's4', rating: 4.6, badge: 'sale', badgeText: '-24%', sold: 1200, date: 11 },
+];
+
+// ============ STATE ============
+let state = {
+  products: PRODUCTS,
+  filtered: [...PRODUCTS],
+  category: 'all',
+  search: '',
+  sort: 'popular',
+  priceMin: 0,
+  priceMax: Infinity,
+  badgeFilter: null,
+  page: 1,
+  perPage: 12,
+  view: 'grid',
+  cart: [],
+  favorites: new Set(),
+  theme: 'dark'
+};
+
+// ============ UTILS ============
+const $ = id => document.getElementById(id);
+const formatPrice = p => p.toLocaleString('ru-RU') + ' ₽';
+
+function showToast(type, title, message) {
+  const container = $('toastContainer');
+  const toast = document.createElement('div');
+  toast.className = `toast ${type}`;
+  const icons = { success: '✅', error: '❌', warning: '⚠️', info: 'ℹ️' };
+  toast.innerHTML = `
+    <div class="toast-icon">${icons[type] || 'ℹ️'}</div>
+    <div class="toast-content">
+      <div class="toast-title">${title}</div>
+      <div class="toast-message">${message}</div>
+    </div>
+  `;
+  container.appendChild(toast);
+  setTimeout(() => {
+    toast.classList.add('hiding');
+    setTimeout(() => toast.remove(), 300);
+  }, 3500);
+}
+
+// ============ RENDER ============
+function renderCategories() {
+  const list = $('categoryList');
+  const counts = {};
+  PRODUCTS.forEach(p => counts[p.cat] = (counts[p.cat] || 0) + 1);
+  list.innerHTML = CATEGORIES.map(c => {
+    const count = c.id === 'all' ? PRODUCTS.length : (counts[c.id] || 0);
+    return `
+      <button class="category-item ${state.category === c.id ? 'active' : ''}" onclick="filterByCategory('${c.id}')">
+        <span class="cat-icon">${c.icon}</span>
+        <span>${c.name}</span>
+        <span class="cat-count">${count}</span>
+      </button>
+    `;
+  }).join('');
+}
+
+function applyFilters() {
+  let result = [...PRODUCTS];
+
+  if (state.category !== 'all') {
+    result = result.filter(p => p.cat === state.category);
+  }
+
+  if (state.search) {
+    const q = state.search.toLowerCase();
+    result = result.filter(p =>
+      p.title.toLowerCase().includes(q) ||
+      p.desc.toLowerCase().includes(q) ||
+      SELLERS[p.seller].name.toLowerCase().includes(q)
+    );
+  }
+
+  if (state.priceMin > 0) result = result.filter(p => p.price >= state.priceMin);
+  if (state.priceMax < Infinity) result = result.filter(p => p.price <= state.priceMax);
+
+  if (state.badgeFilter) {
+    result = result.filter(p => p.badge === state.badgeFilter);
+  }
+
+  switch (state.sort) {
+    case 'cheap': result.sort((a, b) => a.price - b.price); break;
+    case 'expensive': result.sort((a, b) => b.price - a.price); break;
+    case 'rating': result.sort((a, b) => b.rating - a.rating); break;
+    case 'new': result.sort((a, b) => a.date - b.date); break;
+    default: result.sort((a, b) => b.sold - a.sold);
+  }
+
+  state.filtered = result;
+  state.page = 1;
+  renderProducts();
+}
+
+function renderProducts() {
+  const grid = $('productsGrid');
+  grid.className = 'products' + (state.view === 'list' ? ' list-view' : '');
+
+  $('resultsCount').textContent = state.filtered.length;
+
+  if (state.filtered.length === 0) {
+    grid.innerHTML = `
+      <div class="empty">
+        <div class="empty-emoji">🔍</div>
+        <h3>Товары не найдены</h3>
+        <p>Попробуйте изменить фильтры или поисковый запрос</p>
+        <button class="btn btn-primary" style="margin-top:16px" onclick="resetAll(event)">Сбросить фильтры</button>
+      </div>
+    `;
+    $('pagination').innerHTML = '';
+    return;
+  }
+
+  const start = (state.page - 1) * state.perPage;
+  const pageItems = state.filtered.slice(start, start + state.perPage);
+
+  grid.innerHTML = pageItems.map((p, i) => {
+    const seller = SELLERS[p.seller];
+    const isFav = state.favorites.has(p.id);
+    const badges = [];
+    if (p.badge) badges.push(`<span class="badge ${p.badge}">${p.badgeText}</span>`);
+
+    return `
+      <div class="product" style="animation-delay:${i * 0.03}s" onclick="openProduct(${p.id})">
+        <div class="product-media">
+          <div class="product-badges">${badges.join('')}</div>
+          <button class="fav-btn ${isFav ? 'active' : ''}" onclick="event.stopPropagation(); toggleFav(${p.id})">
+            ${isFav ? '❤️' : '🤍'}
+          </button>
+          <span class="emoji">${p.icon}</span>
+        </div>
+        <div class="product-body">
+          <div class="product-title">${p.title}</div>
+          <div class="product-seller">
+            <div class="seller-avatar" style="background:${seller.color}">${seller.avatar}</div>
+            <span>${seller.name}</span>
+            <span class="seller-rating">★ ${seller.rating}</span>
+          </div>
+          <div class="product-meta">
+            <span>🔥 ${p.sold.toLocaleString('ru-RU')} продаж</span>
+          </div>
+          <div class="product-bottom">
+            <div class="product-price">
+              <span class="price-current">${formatPrice(p.price)}</span>
+              ${p.oldPrice ? `<span class="price-old">${formatPrice(p.oldPrice)}</span>` : ''}
+            </div>
+            <button class="buy-btn" onclick="event.stopPropagation(); addToCart(${p.id})">
+              🛒 В корзину
+            </button>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  renderPagination();
+}
+
+function renderPagination() {
+  const totalPages = Math.ceil(state.filtered.length / state.perPage);
+  const pag = $('pagination');
+  if (totalPages <= 1) { pag.innerHTML = ''; return; }
+
+  let html = `<button class="page-btn" ${state.page === 1 ? 'disabled' : ''} onclick="goPage(${state.page - 1})">‹</button>`;
+
+  for (let i = 1; i <= totalPages; i++) {
+    if (i === 1 || i === totalPages || (i >= state.page - 1 && i <= state.page + 1)) {
+      html += `<button class="page-btn ${i === state.page ? 'active' : ''}" onclick="goPage(${i})">${i}</button>`;
+    } else if (i === state.page - 2 || i === state.page + 2) {
+      html += `<span style="padding:0 4px;color:var(--text-muted)">...</span>`;
+    }
+  }
+
+  html += `<button class="page-btn" ${state.page === totalPages ? 'disabled' : ''} onclick="goPage(${state.page + 1})">›</button>`;
+  pag.innerHTML = html;
+}
+
+function goPage(n) {
+  state.page = n;
+  renderProducts();
+  scrollToProducts();
+}
+
+// ============ FILTERS ============
+function filterByCategory(cat) {
+  state.category = cat;
+  state.badgeFilter = null;
+  renderCategories();
+  applyFilters();
+}
+
+function filterByBadge(badge) {
+  state.badgeFilter = state.badgeFilter === badge ? null : badge;
+  state.category = 'all';
+  renderCategories();
+  applyFilters();
+}
+
+function applyPriceFilter() {
+  state.priceMin = parseInt($('priceMin').value) || 0;
+  state.priceMax = parseInt($('priceMax').value) || Infinity;
+  applyFilters();
+}
+
+function applySort() {
+  state.sort = $('sortSelect').value;
+  applyFilters();
+}
+
+function performSearch() {
+  state.search = $('searchInput').value.trim();
+  state.category = 'all';
+  state.badgeFilter = null;
+  renderCategories();
+  applyFilters();
+  scrollToProducts();
+}
+
+function resetAll(e) {
+  if (e) e.preventDefault();
+  state.category = 'all';
+  state.search = '';
+  state.sort = 'popular';
+  state.priceMin = 0;
+  state.priceMax = Infinity;
+  state.badgeFilter = null;
+  state.page = 1;
+  $('searchInput').value = '';
+  $('priceMin').value = '';
+  $('priceMax').value = '';
+  $('sortSelect').value = 'popular';
+  renderCategories();
+  applyFilters();
+}
+
+function setView(v) {
+  state.view = v;
+  $('gridViewBtn').classList.toggle('active', v === 'grid');
+  $('listViewBtn').classList.toggle('active', v === 'list');
+  renderProducts();
+}
+
+function scrollToProducts() {
+  document.querySelector('.main-layout').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// ============ FAVORITES ============
+function toggleFav(id) {
+  if (state.favorites.has(id)) {
+    state.favorites.delete(id);
+    showToast('info', 'Удалено', 'Товар убран из избранного');
+  } else {
+    state.favorites.add(id);
+    showToast('success', 'Добавлено', 'Товар в избранном');
+  }
+  updateFavCount();
+  renderProducts();
+}
+
+function updateFavCount() {
+  const c = $('favCount');
+  if (state.favorites.size > 0) {
+    c.textContent = state.favorites.size;
+    c.style.display = 'flex';
+  } else {
+    c.style.display = 'none';
+  }
+}
+
+function openFavorites() {
+  if (state.favorites.size === 0) {
+    showToast('info', 'Избранное', 'Пока пусто — добавьте товары ❤️');
+    return;
+  }
+  state.filtered = PRODUCTS.filter(p => state.favorites.has(p.id));
+  state.page = 1;
+  renderProducts();
+  scrollToProducts();
+  showToast('success', 'Избранное', `Показано ${state.favorites.size} товаров`);
+}
+
+// ============ CART ============
+function addToCart(id) {
+  const product = PRODUCTS.find(p => p.id === id);
+  if (!product) return;
+
+  const existing = state.cart.find(i => i.id === id);
+  if (existing) {
+    existing.qty++;
+  } else {
+    state.cart.push({ ...product, qty: 1 });
+  }
+
+  updateCartUI();
+  showToast('success', 'В корзине', `"${product.title}"`);
+}
+
+function removeFromCart(id) {
+  state.cart = state.cart.filter(i => i.id !== id);
+  updateCartUI();
+}
+
+function changeQty(id, delta) {
+  const item = state.cart.find(i => i.id === id);
+  if (!item) return;
+  item.qty += delta;
+  if (item.qty <= 0) removeFromCart(id);
+  else updateCartUI();
+}
+
+function updateCartUI() {
+  const count = state.cart.reduce((s, i) => s + i.qty, 0);
+  const badge = $('cartCount');
+  if (count > 0) { badge.textContent = count; badge.style.display = 'flex'; }
+  else badge.style.display = 'none';
+
+  const body = $('cartBody');
+  const footer = $('cartFooter');
+
+  if (state.cart.length === 0) {
+    body.innerHTML = `<div class="cart-empty"><div class="emoji">🛒</div><h3>Корзина пуста</h3><p>Добавьте товары, чтобы продолжить</p></div>`;
+    footer.style.display = 'none';
+    return;
+  }
+
+  body.innerHTML = state.cart.map(item => `
+    <div class="cart-item">
+      <div class="cart-item-media">${item.icon}</div>
+      <div class="cart-item-info">
+        <div class="cart-item-title">${item.title}</div>
+        <div class="cart-item-price">${formatPrice(item.price * item.qty)}</div>
+        <div class="cart-qty">
+          <button class="qty-btn" onclick="changeQty(${item.id}, -1)">−</button>
+          <span>${item.qty}</span>
+          <button class="qty-btn" onclick="changeQty(${item.id}, 1)">+</button>
+        </div>
+      </div>
+      <button class="cart-remove" onclick="removeFromCart(${item.id})">✕</button>
+    </div>
+  `).join('');
+
+  const total = state.cart.reduce((s, i) => s + i.price * i.qty, 0);
+  $('cartItemsTotal').textContent = count;
+  $('cartTotalPrice').textContent = formatPrice(total);
+  footer.style.display = 'block';
+}
+
+function openCart() {
+  $('cartOverlay').classList.add('active');
+  $('cartDrawer').classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeCart() {
+  $('cartOverlay').classList.remove('active');
+  $('cartDrawer').classList.remove('active');
+  document.body.style.overflow = '';
+}
+
+function checkout() {
+  if (state.cart.length === 0) return;
+  const total = state.cart.reduce((s, i) => s + i.price * i.qty, 0);
+  showToast('success', 'Заказ оформлен!', `Сумма: ${formatPrice(total)} (демо)`);
+  state.cart = [];
+  updateCartUI();
+  closeCart();
+}
+
+// ============ PRODUCT MODAL ============
+function openProduct(id) {
+  const p = PRODUCTS.find(x => x.id === id);
+  if (!p) return;
+  const s = SELLERS[p.seller];
+  const isFav = state.favorites.has(p.id);
+
+  $('modalContent').innerHTML = `
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div class="modal-grid">
+      <div class="modal-media">
+        <span class="emoji">${p.icon}</span>
+      </div>
+      <div class="modal-info">
+        ${p.badge ? `<div class="modal-badge">${p.badgeText}</div>` : ''}
+        <h2 class="modal-title">${p.title}</h2>
+        <div class="modal-seller">
+          <div class="seller-avatar" style="background:${s.color}">${s.avatar}</div>
+          <div class="modal-seller-info">
+            <h4>${s.name} <span style="color:var(--warning)">★ ${s.rating}</span></h4>
+            <p>${s.sales.toLocaleString('ru-RU')} продаж · Надёжный продавец</p>
+          </div>
+        </div>
+        <p class="modal-desc">${p.desc}</p>
+        <div class="modal-price-row">
+          <div class="modal-price">${formatPrice(p.price)} <small>${p.oldPrice ? `вместо ${formatPrice(p.oldPrice)}` : ''}</small></div>
+        </div>
+        <div class="modal-actions">
+          <button class="btn btn-primary" onclick="addToCart(${p.id}); closeModal();">🛒 В корзину</button>
+          <button class="btn btn-outline" onclick="event.stopPropagation(); toggleFav(${p.id})">${isFav ? '❤️' : '🤍'}</button>
+        </div>
+      </div>
+    </div>
+  `;
+
+  $('modalOverlay').classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal(e) {
+  if (e && e.target !== $('modalOverlay') && e.type === 'click') return;
+  $('modalOverlay').classList.remove('active');
+  document.body.style.overflow = '';
+}
+
+// ============ HERO SLIDER ============
+let heroIndex = 0;
+function goSlide(i) {
+  heroIndex = i;
+  document.querySelectorAll('.hero-slide').forEach((s, idx) => s.classList.toggle('active', idx === i));
+  document.querySelectorAll('.hero-dot').forEach((d, idx) => d.classList.toggle('active', idx === i));
+}
+
+setInterval(() => {
+  heroIndex = (heroIndex + 1) % 3;
+  goSlide(heroIndex);
+}, 6000);
+
+// ============ THEME ============
+function toggleTheme() {
+  state.theme = state.theme === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', state.theme === 'light' ? 'light' : '');
+  $('themeIcon').textContent = state.theme === 'dark' ? '🌙' : '☀️';
+  if (state.theme === 'light') {
+    document.documentElement.removeAttribute('data-theme');
+    document.documentElement.setAttribute('data-theme', 'light');
+  }
+}
+
+// ============ HEADER SCROLL ============
+window.addEventListener('scroll', () => {
+  $('header').classList.toggle('scrolled', window.scrollY > 10);
+});
+
+// ============ INIT ============
+document.addEventListener('DOMContentLoaded', () => {
+  renderCategories();
+  applyFilters();
+  updateCartUI();
+});
+</script>
+</body>
+</html>
